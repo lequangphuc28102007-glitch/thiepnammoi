@@ -1,0 +1,46 @@
+/* Responsive helpers for the name form and small layout tweaks */
+
+
+/* On wider screens place middle-name and user-name side-by-side */
+
+@media (min-width: 700px) {
+    .name-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        align-items: center;
+    }
+    .name-form label {
+        grid-column: 1 / -1;
+        margin-bottom: 0.5rem;
+    }
+    .name-form input {
+        margin-bottom: 0;
+    }
+    .name-form button {
+        grid-column: 1 / -1;
+        margin-top: 0.75rem;
+    }
+}
+
+
+/* Small screen: ensure inputs stack and remain readable */
+
+@media (max-width: 699px) {
+    .name-form {
+        display: block;
+    }
+    .name-form input {
+        width: 100%;
+        display: block;
+    }
+}
+
+
+/* Make sure fixed elements don't overlap on very small displays */
+
+@media (max-width: 420px) {
+    .decorations {
+        display: none;
+    }
+}

@@ -431,6 +431,7 @@
         const cardWrapper = document.getElementById("card-wrapper");
         const line0 = document.getElementById("line-0");
         const input = document.getElementById("user-name");
+        const middleInput = document.getElementById("middle-name");
         const btnView = document.getElementById("btn-view-card");
 
         if (!nameForm || !cardWrapper || !line0) return;
@@ -439,6 +440,7 @@
 
         function submitName() {
             const name = input ? input.value.trim() : "";
+            const middleRaw = middleInput ? middleInput.value.trim() : "";
             console.log("[submitName] called", { name });
             if (!name) {
                 console.warn("[submitName] empty name - focusing input");
@@ -455,14 +457,26 @@
 
             const normalized = normalizeForMatch(name);
             const tokens = normalized.split(/\s+/).filter(Boolean);
+            // include middle name (if provided) in tokens so matching works whether
+            // the user typed a combined full name or separated middle name field
+            if (middleRaw) {
+                const mid = normalizeForMatch(middleRaw);
+                if (mid) tokens.push(mid);
+            }
 
             let extra = '';
-            // Tú Ngân -> match if user types 'ngan' or 'tu ngan' in any case
-            if (tokens.includes('ngan')) {
-                extra = 'Chúc Tú Ngân năm mới nhìu sức khỏe, gia đình hạnh phúc, học tập làm việc thuận lợi đạt kết quả tốt, thi bằng lái đậu full điểm, năm mới nhìu điều mới, chúc ngày càng xinh đẹp hơn';
-            }
-            // Kim Anh -> match if user types 'kim' or 'anh' or 'kim anh'
-            else if (tokens.includes('kim') || tokens.includes('anh')) {
+            const hasTu = tokens.includes('tu');
+            const hasNgan = tokens.includes('ngan');
+            const hasKim = tokens.includes('kim');
+            const hasAnh = tokens.includes('anh');
+
+            if (hasNgan && hasTu) {
+                extra = 'Chúc Tú Ngân năm mới nhiều sức khỏe, gia đình hạnh phúc, học tập làm việc thuận lợi đạt kết quả tốt, năm mới nhiều điều tốt đẹp, ngày càng xinh đẹp hơn dù giờ đẹp như tiên nữ rồi haha.';
+            } else if (hasNgan) {
+                extra = 'Chúc Tú Ngân năm mới nhiều sức khỏe, gia đình hạnh phúc, học tập làm việc thuận lợi đạt kết quả tốt, năm mới nhiều điều tốt đẹp, ngày càng xinh đẹp hơn dù giờ đẹp như tiên nữ rồi haha.';
+            } else if (hasKim && hasAnh) {
+                extra = 'Chúc cô Kim Anh năm mới nhiều sức khỏe, công việc thuận lợi, mua thêm vài căn nữa.';
+            } else if (hasKim || hasAnh) {
                 extra = 'Chúc cô Kim Anh năm mới nhiều sức khỏe, công việc thuận lợi, mua thêm vài căn nữa.';
             }
 
