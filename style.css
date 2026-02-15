@@ -1,0 +1,427 @@
+/* ===== Reset & Base ===== */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    min-height: 100vh;
+    overflow-x: hidden;
+    font-family: "Be Vietnam Pro", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Festive textured red background */
+    background-color: #b30000;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(180deg, rgba(255, 40, 40, 0.06), rgba(0, 0, 0, 0.06));
+    background-size: 40px 40px, 100% 100%;
+    position: relative;
+    color: #fff;
+}
+
+
+/* ===== Canvas pháo hoa full màn hình ===== */
+
+#fireworks-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    display: block;
+}
+
+
+/* ===== Lớp tuyết rơi (phía trước thiệp) ===== */
+
+#snow-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.snowflake {
+    position: absolute;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 1.2rem;
+    user-select: none;
+    pointer-events: none;
+    will-change: transform, opacity;
+    /* gentle fall + sway for petals */
+    animation: petalFall linear infinite;
+    text-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+}
+
+@keyframes petalFall {
+    0% {
+        transform: translate3d(0, -10vh, 0) rotate(0deg) scale(0.95);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    25% {
+        transform: translate3d(12vw, 25vh, 0) rotate(60deg) scale(1.02);
+    }
+    50% {
+        transform: translate3d(-10vw, 55vh, 0) rotate(180deg) scale(0.95);
+    }
+    75% {
+        transform: translate3d(10vw, 80vh, 0) rotate(300deg) scale(1.05);
+    }
+    100% {
+        transform: translate3d(0, 110vh, 0) rotate(420deg) scale(0.9);
+        opacity: 0;
+    }
+}
+
+
+/* ===== Nút bật/tắt nhạc ===== */
+
+.music-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.music-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+    box-shadow: 0 4px 20px rgba(255, 200, 100, 0.2);
+}
+
+.music-toggle.muted {
+    opacity: 0.7;
+}
+
+.music-toggle .icon-music {
+    font-size: 1.1rem;
+}
+
+
+/* ===== Decorations: lanterns + seal ===== */
+
+.decorations {
+    position: fixed;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 12;
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    pointer-events: none;
+}
+
+.seal {
+    background: linear-gradient(180deg, #ffd700, #ffb347);
+    color: #7a1200;
+    font-weight: 800;
+    padding: 0.35rem 0.6rem;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+    font-family: "Be Vietnam Pro", sans-serif;
+    transform: translateY(6px);
+}
+
+.lantern {
+    width: 36px;
+    height: 56px;
+    background: linear-gradient(180deg, #ffb3b3 0%, #ff4d4d 60%);
+    border-radius: 18px 18px 16px 16px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+    position: relative;
+    display: block;
+    transform-origin: top center;
+    animation: lanternSwing 3s ease-in-out infinite;
+}
+
+.lantern::before {
+    content: "";
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 12px;
+    background: #6b2a14;
+    border-radius: 2px;
+}
+
+.lantern::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 18px;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.06);
+    border-radius: 6px;
+}
+
+.lantern-left {
+    animation-delay: 0s;
+}
+
+.lantern-right {
+    animation-delay: 0.5s;
+}
+
+@keyframes lanternSwing {
+    0% {
+        transform: rotate(-6deg);
+    }
+    50% {
+        transform: rotate(6deg);
+    }
+    100% {
+        transform: rotate(-6deg);
+    }
+}
+
+
+/* ===== Form nhập tên ===== */
+
+.name-form-wrapper {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+.name-form-wrapper.hidden {
+    display: none;
+}
+
+.name-form {
+    max-width: 360px;
+    width: 100%;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.name-form label {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 0.75rem;
+}
+
+.name-form input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    font-family: inherit;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    margin-bottom: 1.25rem;
+}
+
+.name-form input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.name-form input:focus {
+    outline: none;
+    border-color: rgba(255, 200, 100, 0.6);
+    box-shadow: 0 0 0 3px rgba(255, 200, 100, 0.15);
+}
+
+.name-form button {
+    width: 100%;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    font-family: inherit;
+    font-weight: 600;
+    color: #1a0a2e;
+    background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.name-form button:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 20px rgba(255, 200, 100, 0.4);
+}
+
+
+/* ===== Wrapper thiệp - center bằng flexbox ===== */
+
+.card-wrapper {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    min-height: 100vh;
+}
+
+.card-wrapper.hidden {
+    display: none !important;
+}
+
+
+/* ===== Thiệp - Glassmorphism ===== */
+
+.card {
+    max-width: 600px;
+    width: 100%;
+    padding: 2rem 2.25rem;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: 0 26px 60px rgba(0, 0, 0, 0.55);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card.glass {
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.18), rgba(255, 255, 255, 0.02));
+    border: 2px solid rgba(255, 215, 0, 0.15);
+    padding-top: 1rem;
+}
+
+.card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 22px 50px rgba(0, 0, 0, 0.5);
+}
+
+
+/* Decorative accent line above card content */
+
+.card::before {
+    content: "";
+    width: 64px;
+    height: 6px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #ffd700, #ffb347);
+    display: block;
+    margin-bottom: 6px;
+}
+
+
+/* Content spacing inside card */
+
+.card .wishes {
+    width: 100%;
+    padding: 0.5rem 0.5rem 0.25rem 0.5rem;
+    text-align: center;
+}
+
+.card .card-title {
+    margin-top: 0.25rem;
+}
+
+.card .line {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    font-weight: 600;
+}
+
+
+/* ===== Tiêu đề thiệp ===== */
+
+.card-title {
+    font-family: "Great Vibes", cursive;
+    font-size: clamp(2.25rem, 7vw, 3.4rem);
+    font-weight: 400;
+    text-align: center;
+    margin-bottom: 0.25rem;
+    color: #fff1c9;
+    text-shadow: 0 6px 24px rgba(0, 0, 0, 0.55);
+}
+
+
+/* ===== Khối lời chúc ===== */
+
+.wishes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.wishes .line {
+    font-size: clamp(1.2rem, 3vw, 1.7rem);
+    line-height: 1.65;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    color: #ffd700;
+    background: linear-gradient(135deg, #ffd700 0%, #ffb347 30%, #ff6b6b 65%, #ff2d2d 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 500;
+}
+
+.wishes .line.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+/* ===== Responsive mobile ===== */
+
+@media (max-width: 480px) {
+    .card {
+        padding: 1.75rem 1.25rem;
+        border-radius: 16px;
+    }
+    .card-title {
+        margin-bottom: 1.25rem;
+    }
+    .music-toggle {
+        top: 0.75rem;
+        right: 0.75rem;
+        padding: 0.4rem 0.7rem;
+        font-size: 0.85rem;
+    }
+    .music-toggle .label {
+        display: none;
+    }
+}

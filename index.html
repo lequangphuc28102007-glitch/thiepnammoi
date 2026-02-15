@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chúc Mừng Năm Mới</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Decorative header: lanterns + seal -->
+    <div class="decorations" aria-hidden="true">
+        <div class="lantern lantern-left"></div>
+        <div class="lantern lantern-right"></div>
+        <div class="seal">TẾT</div>
+    </div>
+
+    <!-- Canvas pháo hoa nền -->
+    <canvas id="fireworks-canvas"></canvas>
+
+    <!-- Lớp tuyết rơi (phía trước) -->
+    <div id="snow-container" aria-hidden="true"></div>
+
+    <!-- Nút bật/tắt nhạc -->
+    <button type="button" id="music-toggle" class="music-toggle" aria-label="Bật/tắt nhạc nền">
+    <span class="icon-music">♪</span>
+    <span class="label">Nhạc</span>
+  </button>
+
+    <!-- Form nhập tên (hiện trước) -->
+    <div id="name-form-wrapper" class="name-form-wrapper">
+        <form id="name-form" class="name-form glass">
+            <label for="user-name">Nhập tên của bạn</label>
+            <input type="text" id="user-name" name="user-name" placeholder="Ví dụ: Minh, Hương..." maxlength="50" autocomplete="off">
+            <button type="button" id="btn-view-card">Xem thiệp</button>
+        </form>
+    </div>
+
+    <!-- Thiệp chúc mừng (ẩn đến khi nhập tên xong) -->
+    <main class="card-wrapper hidden" id="card-wrapper">
+        <article class="card glass">
+            <h1 class="card-title">Chúc Mừng Năm Mới</h1>
+            <div class="wishes">
+                <p class="line" data-line="0" id="line-0"></p>
+                <p class="line" data-line="1">triệu sư như mơ,</p>
+                <p class="line" data-line="2">trăm sự bất ngờ,</p>
+                <p class="line" data-line="3">hàng giờ hạnh phúc.</p>
+            </div>
+        </article>
+    </main>
+
+    <!-- Extra card for special-name greetings -->
+    <main class="card-wrapper hidden" id="extra-card-wrapper">
+        <article class="card glass" id="extra-card">
+            <h2 class="card-title">Bonus cho người đặc biệt</h2>
+            <div class="wishes">
+                <p class="line" id="extra-line"></p>
+            </div>
+        </article>
+    </main>
+
+    <!-- Nhạc nền (file giả định newyear.mp3) -->
+    <audio id="bg-music" loop preload="auto">
+    <source src="./music1.mp3" type="audio/mpeg">
+  </audio>
+
+    <script src="scripts.js"></script>
+</body>
+
+</html>
