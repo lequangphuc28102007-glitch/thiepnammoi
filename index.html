@@ -70,6 +70,32 @@
     <source src="./music1.mp3" type="audio/mpeg">
   </audio>
 
+    <!-- Form gửi lời chúc từ khách -->
+    <section id="wish-section" class="wish-section glass hidden">
+        <h3>Gửi lời chúc</h3>
+        <form id="wish-form">
+            <input type="text" id="sender-name" name="sender-name" placeholder="Tên của bạn (không bắt buộc)" maxlength="50" autocomplete="off">
+            <textarea id="wish-message" name="wish-message" rows="3" placeholder="Viết lời chúc..." maxlength="500" required></textarea>
+            <div class="wish-actions">
+                <button type="submit">Gửi lời chúc</button>
+                <button type="button" id="owner-view-btn">Xem lời chúc (chủ)</button>
+            </div>
+        </form>
+        <div id="wishes-preview" class="wishes-preview" aria-live="polite"></div>
+    </section>
+
+    <!-- Modal/khung xem dành cho chủ, bảo vệ bằng mật khẩu đơn giản -->
+    <div id="owner-modal" class="owner-modal hidden" aria-hidden="true">
+        <div class="owner-modal-content glass">
+            <button id="owner-close" class="owner-close">Đóng</button>
+            <h3>Lời chúc đã nhận</h3>
+            <div id="owner-wishes-list" class="owner-wishes-list"></div>
+            <div class="owner-actions">
+                <button id="owner-clear">Xóa tất cả</button>
+            </div>
+        </div>
+    </div>
+
     <script src="scripts.js"></script>
 </body>
 

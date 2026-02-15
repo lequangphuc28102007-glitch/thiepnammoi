@@ -425,3 +425,183 @@ body {
         display: none;
     }
 }
+
+
+/* ===== Khung gửi lời chúc (nổi bật, giữ ở dưới trang) ===== */
+
+#wish-section {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 13;
+    width: min(900px, 96%);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 1rem 1rem;
+    border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    backdrop-filter: blur(10px);
+}
+
+#wish-section h3 {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+    color: #fff8e0;
+}
+
+#wish-form {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    width: 100%;
+}
+
+#wish-form input[type="text"] {
+    flex: 0 0 220px;
+    padding: 0.5rem 0.75rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(0, 0, 0, 0.18);
+    color: #fff;
+}
+
+#wish-form textarea {
+    flex: 1 1 auto;
+    min-height: 56px;
+    max-height: 160px;
+    padding: 0.6rem 0.75rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(0, 0, 0, 0.14);
+    color: #fff;
+    resize: vertical;
+}
+
+.wish-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.wish-actions button {
+    padding: 0.5rem 0.75rem;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.wish-actions button[type="submit"] {
+    background: linear-gradient(90deg, #ffd700, #ff8c00);
+    color: #1a0a2e;
+}
+
+.wish-actions #owner-view-btn {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+#wishes-preview {
+    margin-top: 0.35rem;
+    color: #fff8e6;
+    font-size: 0.95rem;
+    max-height: 110px;
+    overflow: auto;
+}
+
+.wish-item {
+    padding: 0.25rem 0.35rem;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.04);
+}
+
+#wish-section.hidden {
+    display: none !important;
+}
+
+
+/* ===== Owner modal styles ===== */
+
+.owner-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(6, 6, 12, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+}
+
+.owner-modal.hidden {
+    display: none;
+}
+
+.owner-modal-content {
+    width: min(920px, 96%);
+    max-height: 85vh;
+    overflow: auto;
+    padding: 1rem 1rem;
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.owner-close {
+    float: right;
+    background: transparent;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.owner-wish {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.owner-wish .time {
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 400;
+    margin-left: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.owner-wish .msg {
+    margin-top: 0.25rem;
+    color: #fff;
+}
+
+@media (max-width: 640px) {
+    #wish-form {
+        flex-direction: column;
+    }
+    #wish-form input[type="text"] {
+        width: 100%;
+    }
+    .wish-actions {
+        justify-content: flex-end;
+        width: 100%;
+    }
+}
+
+
+/* On small screens keep wish section inline (not fixed) so it doesn't cover content */
+
+@media (max-width: 480px) {
+    #wish-section {
+        position: static;
+        transform: none;
+        bottom: auto;
+        left: auto;
+        width: 100%;
+        margin: 0.75rem 0 1.25rem 0;
+    }
+    #site-toast {
+        bottom: 1.5rem !important;
+    }
+}

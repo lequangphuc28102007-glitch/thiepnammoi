@@ -16,7 +16,16 @@
         }
     }
     resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
+    // debounce helper to avoid frequent recalculation on resize
+    function debounce(fn, wait) {
+        let t = null;
+        return function(...args) {
+            clearTimeout(t);
+            t = setTimeout(() => fn.apply(this, args), wait);
+        };
+    }
+
+    window.addEventListener("resize", debounce(resizeCanvas, 120));
 
     // Màu pháo hoa (mỗi lần nổ random từ bảng màu)
     const fireworkColors = [
@@ -501,6 +510,14 @@
             cardWrapper.setAttribute("aria-hidden", "false");
             console.log("[submitName] card shown");
             showLines();
+            // Show wish form/section for guests after name is submitted
+            try {
+                const wishSection = document.getElementById('wish-section');
+                if (wishSection) {
+                    wishSection.classList.remove('hidden');
+                    wishSection.style.display = 'flex';
+                }
+            } catch (e) {}
             // Try to start background music when user opens the card (user gesture)
             try {
                 const bg = document.getElementById('bg-music');
@@ -610,4 +627,188 @@
             musicToggle.classList.remove("muted");
         });
     }
+
+    /* ========== LỜI CHÚC - localStorage (Simple) ========== */
+    const WISHES_KEY = 'thiep_wishes_v1';
+    const OWNER_PASSWORD = 'ngngn12'; // Thay đổi theo ý bạn
+
+    /* lightweight toast (replace alert) */
+    function createToast() {
+        let t = document.getElementById('site-toast');
+        if (t) return t;
+        t = document.createElement('div');
+        t.id = 'site-toast';
+        t.style.position = 'fixed';
+        t.style.left = '50%';
+        t.style.transform = 'translateX(-50%)';
+        t.style.bottom = '6.5rem';
+        t.style.zIndex = '60';
+        t.style.padding = '0.6rem 0.9rem';
+        t.style.borderRadius = '10px';
+        t.style.background = 'rgba(0,0,0,0.7)';
+        t.style.color = '#fff';
+        t.style.fontSize = '0.95rem';
+        t.style.boxShadow = '0 8px 30px rgba(0,0,0,0.5)';
+        t.style.opacity = '0';
+        t.style.transition = 'opacity 240ms ease, transform 240ms ease';
+        document.body.appendChild(t);
+        return t;
+    }
+
+    function showToast(msg, duration = 2200) {
+        try {
+            const t = createToast();
+            t.textContent = msg;
+            t.style.opacity = '1';
+            t.style.transform = 'translateX(-50%) translateY(0)';
+            clearTimeout(t._hideTimer);
+            t._hideTimer = setTimeout(() => {
+                t.style.opacity = '0';
+                t.style.transform = 'translateX(-50%) translateY(6px)';
+            }, duration);
+        } catch (e) {}
+    }
+
+    function getWishes() {
+        try {
+            const raw = localStorage.getItem(WISHES_KEY);
+            return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+            console.warn('getWishes parse error', e);
+            return [];
+        }
+    }
+
+    function saveWishes(arr) {
+        localStorage.setItem(WISHES_KEY, JSON.stringify(arr || []));
+    }
+
+    function addWish(wish) {
+        const arr = getWishes();
+        arr.push(wish);
+        saveWishes(arr);
+    }
+
+    function renderWishesPreview() {
+        const preview = document.getElementById('wishes-preview');
+        if (!preview) return;
+        const arr = getWishes();
+        const last = arr.slice(-3).reverse();
+        if (last.length === 0) {
+            preview.innerHTML = '';
+            return;
+        }
+        preview.innerHTML = last.map(function(w) {
+            const name = w.name ? '<strong>' + escapeHtml(w.name) + ':</strong> ' : '';
+            return '<div class="wish-item">' + name + '<span>' + escapeHtml(w.message) + '</span></div>';
+        }).join('');
+    }
+
+    function escapeHtml(s) {
+        return (s + '').replace(/[&<>"']/g, function(c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": "&#39;" }[c];
+        });
+    }
+
+    function initWishes() {
+        const form = document.getElementById('wish-form');
+        const ownerBtn = document.getElementById('owner-view-btn');
+        const ownerModal = document.getElementById('owner-modal');
+        const ownerClose = document.getElementById('owner-close');
+        const ownerList = document.getElementById('owner-wishes-list');
+        const ownerClear = document.getElementById('owner-clear');
+        const nameEl = document.getElementById('sender-name');
+        const msgEl = document.getElementById('wish-message');
+
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = nameEl ? nameEl.value.trim() : '';
+                const msg = msgEl ? msgEl.value.trim() : '';
+                if (!msg) {
+                    if (msgEl) msgEl.focus();
+                    return;
+                }
+                const wish = { name: name, message: msg, time: Date.now() };
+                addWish(wish);
+                renderWishesPreview();
+                if (msgEl) msgEl.value = '';
+                if (nameEl) nameEl.value = '';
+                showToast('Cảm ơn! Lời chúc đã được gửi.');
+            }, { passive: false });
+        }
+
+        if (ownerBtn) {
+            ownerBtn.addEventListener('click', function() {
+                const p = prompt('Nhập mật khẩu để xem lời chúc (cài sẵn):');
+                if (p === OWNER_PASSWORD) {
+                    showOwnerModal();
+                } else {
+                    showToast('Sai mật khẩu.');
+                }
+            });
+        }
+
+        if (ownerClose) {
+            ownerClose.addEventListener('click', function() {
+                closeOwnerModal();
+            }, { passive: true });
+        }
+
+        if (ownerClear) {
+            ownerClear.addEventListener('click', function() {
+                if (!confirm('Xóa toàn bộ lời chúc? Hành động này không thể hoàn tác.')) return;
+                saveWishes([]);
+                renderOwnerList();
+                renderWishesPreview();
+                showToast('Đã xóa tất cả lời chúc.');
+            });
+        }
+
+        // close by clicking outside content
+        if (ownerModal) {
+            ownerModal.addEventListener('click', function(e) {
+                if (e.target === ownerModal) closeOwnerModal();
+            }, { passive: true });
+        }
+
+        function showOwnerModal() {
+            if (!ownerModal) return;
+            ownerModal.classList.remove('hidden');
+            ownerModal.setAttribute('aria-hidden', 'false');
+            renderOwnerList();
+        }
+
+        function closeOwnerModal() {
+            if (!ownerModal) return;
+            ownerModal.classList.add('hidden');
+            ownerModal.setAttribute('aria-hidden', 'true');
+        }
+
+        function renderOwnerList() {
+            if (!ownerList) return;
+            const arr = getWishes().slice().reverse();
+            if (arr.length === 0) {
+                ownerList.innerHTML = '';
+                return;
+            }
+            ownerList.innerHTML = arr.map(function(w, idx) {
+                const d = new Date(w.time);
+                const t = d.toLocaleString();
+                const n = w.name ? '<strong>' + escapeHtml(w.name) + '</strong>' : '<strong>Khách</strong>';
+                return '<div class="owner-wish">' + n + ' <span class="time">(' + t + ')</span><div class="msg">' + escapeHtml(w.message) + '</div></div>';
+            }).join('');
+        }
+
+        // initial preview render
+        renderWishesPreview();
+    }
+
+    try {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initWishes);
+        } else {
+            initWishes();
+        }
+    } catch (e) {}
 })();
