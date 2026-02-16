@@ -31,7 +31,8 @@
     const fireworkColors = [
         "#ff1a1a", "#ff4d4d", "#ff8c00", "#ffd700", "#ff66b2",
         "#ff66cc", "#ffcc66", "#ff3366", "#ff0077", "#ffb6c1",
-        "#ff4500", "#ff2d2d", "#ff8da1"
+        "#ff4500", "#ff2d2d", "#ff8da1 ", "#3813df", "#066e46", "#8dff89",
+        "#3d071d", "#e9d5f5", "#948e38", "#eb5353", "#615454", "#6866ce", "#1c2955", "#000000"
     ];
 
     function randomColor() {
@@ -50,7 +51,7 @@
         return window._fwAudioCtx;
     }
 
-    function playFireworkSound(volume = 0.7) {
+    function playFireworkSound(volume = 0.5) {
         const audioCtx = getAudioCtx();
         if (!audioCtx) return;
         try {

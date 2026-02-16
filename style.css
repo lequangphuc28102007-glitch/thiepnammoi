@@ -829,3 +829,11 @@ body {
     cursor: not-allowed;
     filter: grayscale(0.08) contrast(0.95);
 }
+
+.standalone-wish {
+    --overlay: linear-gradient(180deg, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.36));
+    background-image: var(--overlay), url('img1.jpg');
+    background-size: cover;
+    background-position: center center;
+    background-blend-mode: overlay;
+}
