@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Gửi lời chúc</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* center container for standalone page */
+        
+        .standalone-wish {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: linear-gradient(180deg, rgba(179, 0, 0, 0.95), rgba(125, 0, 0, 0.92));
+            color: #fff;
+        }
+        /* ensure wish-section appears centered and prominent */
+        
+        .standalone-wish #wish-section {
+            position: relative;
+            transform: none !important;
+            width: min(720px, 96%);
+            max-width: 720px;
+            z-index: 9999;
+            margin: 0 auto;
+            display: block !important;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            color: #fff8e0;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body class="standalone-wish">
+    <main>
+        <a href="index.html" class="back-link">← Quay lại thiệp</a>
+        <!-- Reuse the wish section markup (no hidden class) -->
+        <section id="wish-section" class="wish-section glass">
+            <h3>Gửi lời chúc</h3>
+            <form id="wish-form">
+                <input type="text" id="sender-name" name="sender-name" placeholder="Tên của bạn (không bắt buộc)" maxlength="50" autocomplete="off">
+                <textarea id="wish-message" name="wish-message" rows="5" placeholder="Viết lời chúc..." maxlength="500" required></textarea>
+                <div class="wish-actions">
+                    <button type="submit">Gửi lời chúc</button>
+                    <button type="button" id="owner-view-btn">Xem lời chúc (chủ)</button>
+                </div>
+            </form>
+            <div id="wishes-preview" class="wishes-preview" aria-live="polite"></div>
+        </section>
+    </main>
+    <!-- Background music for this page (place your file music2.mp3 in the project) -->
+    <audio id="bg-music-standalone" loop preload="auto">
+        <source src="./music2.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- floating music toggle for standalone page -->
+    <button id="music-toggle-standalone" class="music-toggle standalone-music" aria-label="Bật/tắt nhạc">♪</button>
+
+    <!-- corner decorations -->
+    <div class="corner-decor top-left" aria-hidden="true"></div>
+    <div class="corner-decor top-right" aria-hidden="true"></div>
+    <div class="corner-decor bottom-left" aria-hidden="true"></div>
+    <div class="corner-decor bottom-right" aria-hidden="true"></div>
+
+    <script src="scripts.js"></script>
+    <script>
+        (function() {
+            // Standalone music toggle — try to play on user gesture
+            const audio = document.getElementById('bg-music-standalone');
+            const btn = document.getElementById('music-toggle-standalone');
+            if (audio) audio.volume = 0.22;
+
+            function updateBtn(playing) {
+                btn.textContent = playing ? '⏸' : '♪';
+            }
+            btn.addEventListener('click', function() {
+                if (!audio) return;
+                if (audio.paused) {
+                    audio.play().catch(function() { /* ignore */ });
+                } else {
+                    audio.pause();
+                }
+                updateBtn(!audio.paused);
+            });
+            // try autoplay on first interaction if browser blocked earlier
+            document.addEventListener('click', function oncePlay() {
+                if (!audio) return;
+                audio.play().catch(function() {});
+                updateBtn(!audio.paused);
+                document.removeEventListener('click', oncePlay);
+            }, {
+                once: true
+            });
+        })();
+    </script>
+</body>
+
+</html>

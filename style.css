@@ -1,3 +1,110 @@
+/* ===== Standalone page background + corner decorations ===== */
+
+.standalone-wish {
+    --overlay: linear-gradient(180deg, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.36));
+    background-image: var(--overlay), url('bg-tet.jpg');
+    background-size: cover;
+    background-position: center center;
+    background-blend-mode: overlay;
+}
+
+.standalone-wish .wish-section {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+.corner-decor {
+    position: fixed;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    z-index: 9998;
+    opacity: 0.95;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    filter: blur(6px) saturate(1.05) contrast(1.02);
+    transition: transform 480ms ease;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 230, 180, 0.95), rgba(255, 160, 120, 0.85) 40%, rgba(255, 120, 120, 0.6) 70%);
+}
+
+.corner-decor.top-left {
+    left: -20px;
+    top: -20px;
+    transform: rotate(-12deg) scale(0.95);
+}
+
+.corner-decor.top-right {
+    right: -20px;
+    top: -20px;
+    transform: rotate(10deg) scale(1);
+}
+
+.corner-decor.bottom-left {
+    left: -22px;
+    bottom: -22px;
+    transform: rotate(8deg) scale(0.95);
+}
+
+.corner-decor.bottom-right {
+    right: -18px;
+    bottom: -18px;
+    transform: rotate(-8deg) scale(1);
+}
+
+
+/* small blossom accents inside decor circles */
+
+.corner-decor::after {
+    content: '';
+    position: absolute;
+    width: 60%;
+    height: 60%;
+    left: 20%;
+    top: 20%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, rgba(255, 250, 245, 0.9), rgba(255, 200, 200, 0.6));
+    box-shadow: inset 0 6px 18px rgba(255, 200, 120, 0.12);
+    transform: scale(0.98);
+}
+
+
+/* gentle color cycle for festive mood */
+
+@keyframes decorShift {
+    0% {
+        filter: hue-rotate(0deg) blur(6px);
+    }
+    50% {
+        filter: hue-rotate(10deg) blur(7px);
+    }
+    100% {
+        filter: hue-rotate(0deg) blur(6px);
+    }
+}
+
+.corner-decor {
+    animation: decorShift 8s ease-in-out infinite;
+}
+
+
+/* standalone music button */
+
+.standalone-music {
+    position: fixed;
+    right: 1rem;
+    top: 1rem;
+    z-index: 10000;
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 0.5rem 0.7rem;
+    border-radius: 8px;
+    font-weight: 700;
+    backdrop-filter: blur(6px);
+}
+
+
 /* ===== Reset & Base ===== */
 
 *,
@@ -117,6 +224,39 @@ body {
     background: rgba(255, 255, 255, 0.2);
     transform: scale(1.05);
     box-shadow: 0 4px 20px rgba(255, 200, 100, 0.2);
+    /* ===== When wish panel should be the only visible element ===== */
+    body.wish-focus {
+        overflow: hidden;
+    }
+    /* hide most decorative / background layers when in focus mode */
+    body.wish-focus .decorations,
+    body.wish-focus #fireworks-canvas,
+    body.wish-focus #snow-container,
+    body.wish-focus .name-form-wrapper,
+    body.wish-focus .card-wrapper,
+    body.wish-focus #extra-card-wrapper,
+    body.wish-focus .music-toggle {
+        display: none !important;
+    }
+    /* make the panel centered and prominent when focusing */
+    body.wish-focus #wish-section {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%) !important;
+        width: min(720px, 96%);
+        max-height: 92vh;
+        overflow: auto;
+        z-index: 99999;
+        display: block !important;
+        box-shadow: 0 28px 80px rgba(0, 0, 0, 0.7);
+    }
+    /* keep the floating toggle button visible so user can close the panel */
+    body.wish-focus .send-wish-btn {
+        right: 1rem;
+        bottom: 1rem;
+        z-index: 130;
+    }
 }
 
 .music-toggle.muted {
@@ -604,4 +744,88 @@ body {
     #site-toast {
         bottom: 1.5rem !important;
     }
+}
+
+
+/* ===== Side panel variant + toggle button (desktop) ===== */
+
+:root {
+    --wish-panel-width: 360px;
+}
+
+
+/* By default on larger screens keep wish-section hidden (off-canvas to right) */
+
+#wish-section {
+    transition: transform 320ms cubic-bezier(.2, .9, .2, 1), opacity 220ms ease;
+}
+
+
+/* side-panel layout for wider viewports */
+
+@media (min-width: 481px) {
+    #wish-section {
+        position: fixed;
+        top: 50%;
+        right: 1rem;
+        bottom: auto;
+        left: auto;
+        transform: translateY(-50%) translateX(110%);
+        width: var(--wish-panel-width);
+        max-width: 92%;
+        z-index: 13;
+        border-radius: 12px;
+        display: block;
+        /* keep in DOM but off-canvas */
+    }
+    /* When the body has this class, slide the panel in and nudge the card to the left so it doesn't cover */
+    body.wish-focus #wish-section {
+        transform: translateY(-50%) translateX(0%);
+    }
+    body.wish-focus .card-wrapper {
+        margin-right: calc(var(--wish-panel-width) + 1rem);
+        transition: margin-right 320ms cubic-bezier(.2, .9, .2, 1);
+    }
+    /* Floating toggle button */
+    .send-wish-btn {
+        position: fixed;
+        right: 1rem;
+        bottom: 4.25rem;
+        z-index: 30;
+        background: linear-gradient(90deg, #ff6b6b, #ffb347);
+        color: #1a0a2e;
+        border: none;
+        padding: 0.6rem 0.9rem;
+        border-radius: 999px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+        font-weight: 700;
+        cursor: pointer;
+        backdrop-filter: blur(6px);
+    }
+    .send-wish-btn:active {
+        transform: translateY(1px);
+    }
+}
+
+
+/* On small screens keep the button less intrusive */
+
+@media (max-width: 480px) {
+    .send-wish-btn {
+        position: fixed;
+        right: 0.75rem;
+        bottom: 5.5rem;
+        padding: 0.5rem 0.7rem;
+        font-size: 0.95rem;
+    }
+}
+
+
+/* visually indicate disabled state */
+
+.send-wish-btn[disabled],
+.send-wish-btn[aria-disabled="true"] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: grayscale(0.08) contrast(0.95);
 }

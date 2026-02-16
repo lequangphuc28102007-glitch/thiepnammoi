@@ -510,14 +510,8 @@
             cardWrapper.setAttribute("aria-hidden", "false");
             console.log("[submitName] card shown");
             showLines();
-            // Show wish form/section for guests after name is submitted
-            try {
-                const wishSection = document.getElementById('wish-section');
-                if (wishSection) {
-                    wishSection.classList.remove('hidden');
-                    wishSection.style.display = 'flex';
-                }
-            } catch (e) {}
+            // (Intentionally do not auto-show the wish form.)
+            // The wish input is available via the floating "Gửi lời chúc" button
             // Try to start background music when user opens the card (user gesture)
             try {
                 const bg = document.getElementById('bg-music');
@@ -538,6 +532,14 @@
             try {
                 if (typeof Firework !== 'undefined') {
                     fireworks.push(new Firework());
+                }
+            } catch (e) {}
+            // enable the "Gửi lời chúc" button now that the card is visible
+            try {
+                const sendBtn = document.getElementById('send-wish-btn');
+                if (sendBtn) {
+                    sendBtn.disabled = false;
+                    sendBtn.setAttribute('aria-disabled', 'false');
                 }
             } catch (e) {}
         }
@@ -804,11 +806,108 @@
         renderWishesPreview();
     }
 
+    /* ===== Toggle for side wish panel + create floating button if missing ===== */
+    function initWishPanelToggle() {
+        // create button if not present in DOM
+        let btn = document.getElementById('send-wish-btn');
+        if (!btn) {
+            btn = document.createElement('button');
+            btn.id = 'send-wish-btn';
+            btn.className = 'send-wish-btn';
+            btn.setAttribute('aria-controls', 'wish-section');
+            btn.setAttribute('aria-expanded', 'false');
+            btn.title = 'Gửi lời chúc';
+            btn.innerHTML = '💌 Gửi lời chúc';
+            document.body.appendChild(btn);
+        }
+        const wishSection = document.getElementById('wish-section');
+        const cardWrapper = document.getElementById('card-wrapper');
+        const cardVisible = cardWrapper && !cardWrapper.classList.contains('hidden');
+
+        // disable the button until a name is submitted / card is visible
+        try {
+            btn.disabled = !cardVisible;
+            btn.setAttribute('aria-disabled', String(!cardVisible));
+        } catch (e) {}
+
+        function togglePanel(force) {
+            const isOpen = document.body.classList.contains('wish-focus');
+            const shouldOpen = typeof force === 'boolean' ? force : !isOpen;
+            if (shouldOpen) {
+                document.body.classList.add('wish-focus');
+                btn.setAttribute('aria-expanded', 'true');
+                // ensure the wish section is present (not display:none)
+                if (wishSection) {
+                    wishSection.classList.remove('hidden');
+                    wishSection.style.display = 'block';
+                }
+                // change button label to indicate closing
+                try { btn.innerHTML = '✖ Đóng'; } catch (e) {}
+                // focus message field shortly after opening
+                setTimeout(function() {
+                    const ta = document.getElementById('wish-message');
+                    if (ta) ta.focus();
+                }, 260);
+            } else {
+                document.body.classList.remove('wish-focus');
+                btn.setAttribute('aria-expanded', 'false');
+                try {
+                    if (wishSection) {
+                        wishSection.classList.add('hidden');
+                        wishSection.style.display = '';
+                    }
+                } catch (e) {}
+                try { btn.innerHTML = '💌 Gửi lời chúc'; } catch (e) {}
+            }
+        }
+
+        btn.addEventListener('click', function() {
+            // require the card (name submitted) before navigating to standalone page
+            const cw = document.getElementById('card-wrapper');
+            const visible = cw && !cw.classList.contains('hidden');
+            if (!visible) {
+                try { showToast('Vui lòng nhập tên trước khi gửi lời chúc.'); } catch (e) {}
+                const nameInput = document.getElementById('user-name');
+                if (nameInput) nameInput.focus();
+                return;
+            }
+            // navigate to standalone wish page
+            try {
+                window.location.href = 'send-wish.html';
+            } catch (e) {
+                // fallback: open in new tab
+                window.open('send-wish.html', '_blank');
+            }
+        }, { passive: true });
+
+        // close on Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.body.classList.contains('wish-focus')) {
+                togglePanel(false);
+            }
+        });
+
+        // clicking outside the panel (on the card) will close it
+        document.addEventListener('click', function(e) {
+            if (!document.body.classList.contains('wish-focus')) return;
+            const panel = document.getElementById('wish-section');
+            const button = document.getElementById('send-wish-btn');
+            if (!panel) return;
+            if (panel.contains(e.target) || (button && button.contains(e.target))) return;
+            // click was outside panel and button -> close
+            togglePanel(false);
+        }, { passive: true });
+    }
+
     try {
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initWishes);
+            document.addEventListener('DOMContentLoaded', function() {
+                initWishes();
+                initWishPanelToggle();
+            });
         } else {
             initWishes();
+            initWishPanelToggle();
         }
     } catch (e) {}
 })();
